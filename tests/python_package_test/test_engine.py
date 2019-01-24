@@ -840,18 +840,17 @@ class TestEngine(unittest.TestCase):
         one_tree = model_str[model_str.find('Tree=1'):model_str.find('end of trees')]
         one_tree_size = len(one_tree)
         one_tree = one_tree.replace('Tree=1', 'Tree={}')
-        multiplier = int(2**31 / one_tree_size) + 1
+        multiplier = int(2**31 / (one_tree_size + len(str(one_tree_size)) + 1))
         total_trees = multiplier + 2
         tree_sizes = model_str[model_str.find('tree_sizes'):model_str.find('Tree=0')].strip()
-        tree_sizes = (tree_sizes
-                      + ' '
-                      + ' '.join(str(one_tree_size + len(str(i)) - 1) for i in range(2, total_trees)))
         new_model_str = (model_str[:model_str.find('tree_sizes')]
                          + tree_sizes
+                         + ' '
+                         + ' '.join(str(one_tree_size + len(str(i)) - 1) for i in range(2, total_trees))
                          + '\n\n'
-                         + model_str[model_str.find('Tree=0'):])
-        begin, sep, end = new_model_str.rpartition('end of trees')
-        new_model_str = begin + (one_tree * multiplier).format(*range(2, total_trees)) + sep + end
+                         + model_str[model_str.find('Tree=0'):model_str.find('end of trees')]
+                         + (one_tree * multiplier).format(*range(2, total_trees))
+                         + model_str[model_str.find('end of trees'):])
         self.assertGreater(len(new_model_str), 2**31)
         bst.model_from_string(new_model_str, verbose=False)
         self.assertEqual(bst.num_trees(), total_trees)
