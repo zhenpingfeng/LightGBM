@@ -830,7 +830,7 @@ class TestEngine(unittest.TestCase):
         self.assertIn('multi_logloss-mean', results)
         self.assertEqual(len(results['multi_logloss-mean']), 10)
 
-    @unittest.skipIf(psutil.virtual_memory().available / 1024 / 1024 / 1024 < 5, 'not enough RAM')
+    @unittest.skipIf(psutil.virtual_memory().available / 1024 / 1024 / 1024 < 6, 'not enough RAM')
     def test_model_size(self):
         X, y = load_boston(True)
         data = lgb.Dataset(X, y)
